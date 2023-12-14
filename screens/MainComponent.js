@@ -240,9 +240,7 @@ const Main = () => {
     }, [dispatch]);
 
     useEffect(() => {
-        NetInfo.fetch().then((connectionInfo) => {
-
-        });
+        showNetInfo();
 
         const unsubscribeNetInfo = NetInfo.addEventListener(
             (connectionInfo) => {
@@ -252,6 +250,19 @@ const Main = () => {
 
         return unsubscribeNetInfo;
     }, []);
+
+    const showNetInfo = async () => {
+        const connectionInfo = await NetInfo.fetch();
+        Platform.OS === 'ios'
+            ? Alert.alert(
+                'Initial Network Connectivity Type:',
+                connectionInfo.type
+            )
+            : ToastAndroid.show(
+                'Initial Network Connectivity Type: ' + connectionInfo.type,
+                ToastAndroid.LONG
+            );
+    };
 
     const handleConnectivityChange = (connectionInfo) => {
         let connectionMsg = 'You are now connected to an active network.';
@@ -273,178 +284,160 @@ const Main = () => {
             ? Alert.alert('Connection change:', connectionMsg)
             : ToastAndroid.show(connectionMsg, ToastAndroid.LONG);
     };
-    const showNetInfo = async () => {
-        try {
-            const connectionInfo = await NetInfo.fetch();
-            Platform.OS === 'ios'
-                ? Alert.alert(
-                    'Initial Network Connectivity Type:',
-                    connectionInfo.type
-                )
-                : ToastAndroid.show(
-                    'Initial Network Connectivity Type: ' +
-                    connectionInfo.type,
-                    ToastAndroid.LONG
-                );
-        } catch (error) {
-            console.error('Error fetching network info:', error);
-        };
 
-
-        return (
-            <View
-                style={{
-                    flex: 1,
-                    paddingTop:
-                        Platform.OS === 'ios' ? 0 : Constants.statusBarHeight
-                }}
+    return (
+        <View
+            style={{
+                flex: 1,
+                paddingTop:
+                    Platform.OS === 'ios' ? 0 : Constants.statusBarHeight
+            }}
+        >
+            <Drawer.Navigator
+                initialRouteName='Home'
+                drawerContent={CustomDrawerContent}
+                drawerStyle={{ backgroundColor: '#CEC8FF' }}
             >
-                <Drawer.Navigator
-                    initialRouteName='Home'
-                    drawerContent={CustomDrawerContent}
-                    drawerStyle={{ backgroundColor: '#CEC8FF' }}
-                >
-                    <Drawer.Screen
-                        name='Login'
-                        component={LoginNavigator}
-                        options={{
-                            drawerIcon: ({ color }) => (
-                                <Icon
-                                    name='sign-in'
-                                    type='font-awesome'
-                                    size={24}
-                                    iconStyle={{ width: 24 }}
-                                    color={color}
-                                />
-                            )
-                        }}
-                    />
-                    <Drawer.Screen
-                        name='Home'
-                        component={HomeNavigator}
-                        options={{
-                            title: 'Home',
-                            drawerIcon: ({ color }) => (
-                                <Icon
-                                    name='home'
-                                    type='font-awesome'
-                                    size={24}
-                                    iconStyle={{ width: 24 }}
-                                    color={color}
-                                />
-                            )
-                        }}
-                    />
-                    <Drawer.Screen
-                        name='Directory'
-                        component={DirectoryNavigator}
-                        options={{
-                            title: 'Campsite Directory',
-                            drawerIcon: ({ color }) => (
-                                <Icon
-                                    name='list'
-                                    type='font-awesome'
-                                    size={24}
-                                    iconStyle={{ width: 24 }}
-                                    color={color}
-                                />
-                            )
-                        }}
-                    />
-                    <Drawer.Screen
-                        name='ReserveCampsite'
-                        component={ReservationNavigator}
-                        options={{
-                            title: 'Reserve Campsite',
-                            drawerIcon: ({ color }) => (
-                                <Icon
-                                    name='tree'
-                                    type='font-awesome'
-                                    size={24}
-                                    iconStyle={{ width: 24 }}
-                                    color={color}
-                                />
-                            )
-                        }}
-                    />
-                    <Drawer.Screen
-                        name='Favorites'
-                        component={FavoritesNavigator}
-                        options={{
-                            title: 'My Favorites',
-                            drawerIcon: ({ color }) => (
-                                <Icon
-                                    name='heart'
-                                    type='font-awesome'
-                                    size={24}
-                                    iconStyle={{ width: 24 }}
-                                    color={color}
-                                />
-                            )
-                        }}
-                    />
-                    <Drawer.Screen
-                        name='About'
-                        component={AboutNavigator}
-                        options={{
-                            title: 'About',
-                            drawerIcon: ({ color }) => (
-                                <Icon
-                                    name='info-circle'
-                                    type='font-awesome'
-                                    size={24}
-                                    iconStyle={{ width: 24 }}
-                                    color={color}
-                                />
-                            )
-                        }}
-                    />
-                    <Drawer.Screen
-                        name='Contact'
-                        component={ContactNavigator}
-                        options={{
-                            title: 'Contact Us',
-                            drawerIcon: ({ color }) => (
-                                <Icon
-                                    name='address-card'
-                                    type='font-awesome'
-                                    size={24}
-                                    iconStyle={{ width: 24 }}
-                                    color={color}
-                                />
-                            )
-                        }}
-                    />
-                </Drawer.Navigator>
-            </View>
-        );
-    };
-
-    const styles = StyleSheet.create({
-        drawerHeader: {
-            backgroundColor: '#5637DD',
-            height: 140,
-            alignItems: 'center',
-            justifyContent: 'center',
-            flex: 1,
-            flexDirection: 'row'
-        },
-        drawerHeaderText: {
-            color: '#fff',
-            fontSize: 24,
-            fontWeight: 'bold'
-        },
-        drawerImage: {
-            margin: 10,
-            height: 60,
-            width: 60
-        },
-        stackIcon: {
-            marginLeft: 10,
-            color: '#fff',
-            fontSize: 24
-        }
-    });
+                <Drawer.Screen
+                    name='Login'
+                    component={LoginNavigator}
+                    options={{
+                        drawerIcon: ({ color }) => (
+                            <Icon
+                                name='sign-in'
+                                type='font-awesome'
+                                size={24}
+                                iconStyle={{ width: 24 }}
+                                color={color}
+                            />
+                        )
+                    }}
+                />
+                <Drawer.Screen
+                    name='Home'
+                    component={HomeNavigator}
+                    options={{
+                        title: 'Home',
+                        drawerIcon: ({ color }) => (
+                            <Icon
+                                name='home'
+                                type='font-awesome'
+                                size={24}
+                                iconStyle={{ width: 24 }}
+                                color={color}
+                            />
+                        )
+                    }}
+                />
+                <Drawer.Screen
+                    name='Directory'
+                    component={DirectoryNavigator}
+                    options={{
+                        title: 'Campsite Directory',
+                        drawerIcon: ({ color }) => (
+                            <Icon
+                                name='list'
+                                type='font-awesome'
+                                size={24}
+                                iconStyle={{ width: 24 }}
+                                color={color}
+                            />
+                        )
+                    }}
+                />
+                <Drawer.Screen
+                    name='ReserveCampsite'
+                    component={ReservationNavigator}
+                    options={{
+                        title: 'Reserve Campsite',
+                        drawerIcon: ({ color }) => (
+                            <Icon
+                                name='tree'
+                                type='font-awesome'
+                                size={24}
+                                iconStyle={{ width: 24 }}
+                                color={color}
+                            />
+                        )
+                    }}
+                />
+                <Drawer.Screen
+                    name='Favorites'
+                    component={FavoritesNavigator}
+                    options={{
+                        title: 'My Favorites',
+                        drawerIcon: ({ color }) => (
+                            <Icon
+                                name='heart'
+                                type='font-awesome'
+                                size={24}
+                                iconStyle={{ width: 24 }}
+                                color={color}
+                            />
+                        )
+                    }}
+                />
+                <Drawer.Screen
+                    name='About'
+                    component={AboutNavigator}
+                    options={{
+                        title: 'About',
+                        drawerIcon: ({ color }) => (
+                            <Icon
+                                name='info-circle'
+                                type='font-awesome'
+                                size={24}
+                                iconStyle={{ width: 24 }}
+                                color={color}
+                            />
+                        )
+                    }}
+                />
+                <Drawer.Screen
+                    name='Contact'
+                    component={ContactNavigator}
+                    options={{
+                        title: 'Contact Us',
+                        drawerIcon: ({ color }) => (
+                            <Icon
+                                name='address-card'
+                                type='font-awesome'
+                                size={24}
+                                iconStyle={{ width: 24 }}
+                                color={color}
+                            />
+                        )
+                    }}
+                />
+            </Drawer.Navigator>
+        </View>
+    );
 };
+
+const styles = StyleSheet.create({
+    drawerHeader: {
+        backgroundColor: '#5637DD',
+        height: 140,
+        alignItems: 'center',
+        justifyContent: 'center',
+        flex: 1,
+        flexDirection: 'row'
+    },
+    drawerHeaderText: {
+        color: '#fff',
+        fontSize: 24,
+        fontWeight: 'bold'
+    },
+    drawerImage: {
+        margin: 10,
+        height: 60,
+        width: 60
+    },
+    stackIcon: {
+        marginLeft: 10,
+        color: '#fff',
+        fontSize: 24
+    }
+});
 
 export default Main;
